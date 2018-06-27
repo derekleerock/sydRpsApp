@@ -1,66 +1,66 @@
-function Requests() {
-    this.play = (p1, p2, observer) => {
-        if (['rock', 'scissors', 'paper'].includes(p1) === false ||
-            ['rock', 'scissors', 'paper'].includes(p2) === false) {
+function Round() {
+    this.play = (player1Throw, player2Throw, observer) => {
+        if (['rock', 'scissors', 'paper'].includes(player1Throw) === false ||
+            ['rock', 'scissors', 'paper'].includes(player2Throw) === false) {
             observer.invalid()
-        } else if (p1 === p2) {
+        } else if (player1Throw === player2Throw) {
             observer.tie()
-        } else if (p1 === 'rock' && p2 === 'scissors' ||
-            p1 === 'scissors' && p2 === 'paper' ||
-            p1 === 'paper' && p2 === 'rock') {
-            observer.p1Wins()
+        } else if (player1Throw === 'rock' && player2Throw === 'scissors' ||
+            player1Throw === 'scissors' && player2Throw === 'paper' ||
+            player1Throw === 'paper' && player2Throw === 'rock') {
+            observer.player1Wins()
         } else {
-            observer.p2Wins()
+            observer.player2Wins()
         }
     }
 }
 
 describe('play', () => {
-    let requests, observer
+    let round, observer
 
     beforeEach(() => {
-        requests = new Requests()
+        round = new Round()
     })
 
     describe('player 1 wins scenarios', () => {
         beforeEach(() => {
-            observer = jasmine.createSpyObj('observer', ['p1Wins'])
+            observer = jasmine.createSpyObj('observer', ['player1Wins'])
         })
 
         it('rock vs scissors', () => {
-            requests.play('rock', 'scissors', observer)
-            expect(observer.p1Wins).toHaveBeenCalled()
+            round.play('rock', 'scissors', observer)
+            expect(observer.player1Wins).toHaveBeenCalled()
         })
 
         it('scissors vs paper', () => {
-            requests.play('scissors', 'paper', observer)
-            expect(observer.p1Wins).toHaveBeenCalled()
+            round.play('scissors', 'paper', observer)
+            expect(observer.player1Wins).toHaveBeenCalled()
         })
 
         it('paper vs rock', () => {
-            requests.play('paper', 'rock', observer)
-            expect(observer.p1Wins).toHaveBeenCalled()
+            round.play('paper', 'rock', observer)
+            expect(observer.player1Wins).toHaveBeenCalled()
         })
     })
 
     describe('player 2 wins scenarios', () => {
         beforeEach(() => {
-            observer = jasmine.createSpyObj('observer', ['p2Wins'])
+            observer = jasmine.createSpyObj('observer', ['player2Wins'])
         })
 
         it('scissors vs rock', () => {
-            requests.play('scissors', 'rock', observer)
-            expect(observer.p2Wins).toHaveBeenCalled()
+            round.play('scissors', 'rock', observer)
+            expect(observer.player2Wins).toHaveBeenCalled()
         })
 
         it('paper vs scissors', () => {
-            requests.play('paper', 'scissors', observer)
-            expect(observer.p2Wins).toHaveBeenCalled()
+            round.play('paper', 'scissors', observer)
+            expect(observer.player2Wins).toHaveBeenCalled()
         })
 
         it('rock vs paper', () => {
-            requests.play('rock', 'paper', observer)
-            expect(observer.p2Wins).toHaveBeenCalled()
+            round.play('rock', 'paper', observer)
+            expect(observer.player2Wins).toHaveBeenCalled()
         })
     })
 
@@ -70,17 +70,17 @@ describe('play', () => {
         })
 
         it('rock vs rock', () => {
-            requests.play('rock', 'rock', observer)
+            round.play('rock', 'rock', observer)
             expect(observer.tie).toHaveBeenCalled()
         })
 
         it('scissors vs scissors', () => {
-            requests.play('scissors', 'scissors', observer)
+            round.play('scissors', 'scissors', observer)
             expect(observer.tie).toHaveBeenCalled()
         })
 
         it('paper vs paper', () => {
-            requests.play('paper', 'paper', observer)
+            round.play('paper', 'paper', observer)
             expect(observer.tie).toHaveBeenCalled()
         })
     })
@@ -91,17 +91,17 @@ describe('play', () => {
         })
 
         it('invalid vs rock', () => {
-            requests.play('spock', 'rock', observer)
+            round.play('invalid throw', 'rock', observer)
             expect(observer.invalid).toHaveBeenCalled()
         })
 
         it('rock vs invalid', () => {
-            requests.play('rock', 'spock', observer)
+            round.play('rock', 'invalid throw', observer)
             expect(observer.invalid).toHaveBeenCalled()
         })
 
         it('invalid vs invalid', () => {
-            requests.play('spock', 'spock', observer)
+            round.play('invalid throw', 'spock', observer)
             expect(observer.invalid).toHaveBeenCalled()
         })
     })
