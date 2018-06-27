@@ -1,5 +1,6 @@
 import React from 'react'
-import * as ReactDOM from 'react-dom'
+import ReactDOM from 'react-dom'
+import ReactTestUtils from 'react-dom/test-utils'
 
 class RPSApp extends React.Component {
     constructor() {
@@ -7,8 +8,12 @@ class RPSApp extends React.Component {
         this.state = {}
     }
 
+    inputChanged(event) {
+        this.setState({[event.target.name]: event.target.value})
+    }
+
     submitHandler() {
-        this.props.round.play('p1 throw placeholder', 'p2 throw placeholder', this)
+        this.props.round.play(this.state.p1Throw, this.state.p2Throw, this)
     }
 
     player1Wins() {
@@ -31,6 +36,8 @@ class RPSApp extends React.Component {
         return (
             <div>
                 {this.state.gameResult}
+                <input name="p1Throw" onChange={this.inputChanged.bind(this)}/>
+                <input name="p2Throw" onChange={this.inputChanged.bind(this)}/>
                 <button onClick={this.submitHandler.bind(this)}>Play</button>
             </div>
         )
@@ -110,6 +117,20 @@ describe('play form', function () {
         })
     })
 
+    describe('submitting a game', () => {
+        it('sends the users input to the play request', () => {
+            let playSpy = jasmine.createSpy('playSpy')
+            renderApp({play: playSpy})
+
+            enterTextIntoInput('p1Throw', 'foo')
+            enterTextIntoInput('p2Throw', 'bar')
+
+            submitForm()
+
+            expect(playSpy).toHaveBeenCalledWith('foo', 'bar', jasmine.any(Object))
+        })
+    })
+
     function setupDOM() {
         domFixture = document.createElement('div')
         document.body.appendChild(domFixture)
@@ -128,6 +149,12 @@ describe('play form', function () {
 
     function page() {
         return domFixture.innerText
+    }
+
+    function enterTextIntoInput(inputName, inputValue) {
+        let p1ThrowInput = document.querySelector('[name="' + inputName + '"]')
+        p1ThrowInput.value = inputValue
+        ReactTestUtils.Simulate.change(p1ThrowInput)
     }
 
     function submitForm() {
