@@ -24,23 +24,51 @@ class RPSApp extends React.Component {
 }
 
 describe('play form', function () {
+    let domFixture
+
+    beforeEach(function () {
+        setupDOM()
+    })
+
+    afterEach(function () {
+        cleanupDOM()
+    })
+
     describe('when the play use case tells the UI that the input is invalid', () => {
+        beforeEach(function () {
+            renderApp({play: (p1, p2, observer) => observer.invalidInput()})
+        })
+
         it('tells the user that their input is invalid', () => {
-            const domFixture = document.createElement('div')
-            document.body.appendChild(domFixture)
+            expect(page()).not.toContain('INVALID!')
 
-            const alwaysInvalidRound = {
-                play: (p1, p2, observer) => observer.invalidThrow()
-            }
+            submitForm()
 
-            ReactDOM.render(
-                <RPSApp rounds={alwaysInvalidRound}/>,
-                domFixture
-            )
-
-            expect(domFixture.innerText).not.toContain('INVALID!')
-            document.querySelector('button').click()
-            expect(domFixture.innerText).toContain('INVALID!')
+            expect(page()).toContain('INVALID!')
         })
     })
+
+    function setupDOM() {
+        domFixture = document.createElement('div')
+        document.body.appendChild(domFixture)
+    }
+
+    function cleanupDOM() {
+        domFixture.remove()
+    }
+
+    function renderApp(round) {
+        ReactDOM.render(
+            <RPSApp round={round}/>,
+            domFixture
+        )
+    }
+
+    function page() {
+        return domFixture.innerText
+    }
+
+    function submitForm() {
+        document.querySelector('button').click()
+    }
 })
